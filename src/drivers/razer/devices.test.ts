@@ -57,6 +57,11 @@ const VERIFIED_SINCE: ReadonlyArray<[number, VerifiedProfile]> = [
   // also the paired mouse used to verify Dock Pro passthrough.
   [0x00a7, { model: "Naga V2 Pro (Wired)", wireless: false, maxDpi: 30000, transactionId: RAZER_TRANSACTION_ID, rates: RATES_1K, highRate: false }],
   [0x00a8, { model: "Naga V2 Pro", wireless: true, maxDpi: 30000, transactionId: RAZER_TRANSACTION_ID, rates: RATES_1K, highRate: true }],
+  // DeathAdder V3 Pro (firmware 2.1) on the stock HyperSpeed receiver: the
+  // legacy polling command changes the measured report rate (124 Hz at 125,
+  // 842 Hz peak at 1000), and DPI, auto sleep and low power all persisted
+  // across a reconnect and a power cycle.
+  [0x00b7, { model: "DeathAdder V3 Pro", wireless: true, maxDpi: 30000, transactionId: RAZER_TRANSACTION_ID, rates: RATES_1K, highRate: false }],
 ];
 
 const VERIFIED = [...REFACTOR_BASELINE, ...VERIFIED_SINCE];
@@ -69,7 +74,7 @@ const VERIFIED = [...REFACTOR_BASELINE, ...VERIFIED_SINCE];
  * hardware-tested", so it is pinned like the others without claiming to be
  * verified.
  */
-const HARDWARE_VERIFIED: readonly number[] = [0x00a4, 0x00a5, 0x00a6, 0x00a7, 0x00a8, 0x00c0, 0x00c1, 0x00b8];
+const HARDWARE_VERIFIED: readonly number[] = [0x00a4, 0x00a5, 0x00a6, 0x00a7, 0x00a8, 0x00c0, 0x00c1, 0x00b8, 0x00b7];
 
 test("every pinned product keeps exactly the profile it was given", () => {
   // A silent change to any of these would only show up on hardware, which is

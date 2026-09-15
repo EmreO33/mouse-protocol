@@ -23,6 +23,7 @@ Identifiers verified on hardware:
 - `1532:008a` — Viper Mini, wired (separate driver)
 - `1532:00b8` — Viper V3 HyperSpeed, stock HyperSpeed receiver
 - `1532:00a3` — Cobra, wired (separate driver)
+- `1532:00b7` — DeathAdder V3 Pro, stock HyperSpeed receiver (firmware 2.1)
 
 Mouse Dock Pro uses the same 90-byte protocol as the paired mouse. It has no
 fixed polling list: if the paired mouse answers the extended polling command it
@@ -156,7 +157,46 @@ this model and took the whole read down with it. The two are now read
 independently; an unreadable charging state reports `Unknown` rather than
 costing the level.
 
-## DeathAdder V3 Pro (`1532:00b6`) — open: a write that confirms but may not apply
+## DeathAdder V3 Pro (`1532:00b7`) — verified on the stock receiver (firmware 2.1)
+
+A third session, run from Node over hidapi against the same driver class
+(`RazerHidClient`, unmodified) with Synapse and every Razer service quit,
+settled both questions the two captures below left open. Raw reports and
+per-step results are in `captures/razer-deathadder-v3-pro/`.
+
+Interface: `MI_00`, the collection whose only usage is Generic Desktop Mouse,
+answered on the first attempt. `readStatus()` took ~850 ms for 16 feature
+report exchanges; a 3-minute soak of one read every 5 s completed 31/31 with
+latency between 822 and 914 ms and no stalls.
+
+| Setting | Written | Read back after reconnect | After power cycle |
+| --- | --- | --- | --- |
+| DPI | 800, 3200, 1600 | each value | 1600 |
+| Polling (legacy command) | 125, 500, 1000 Hz | each value | 1000 |
+| Polling 2000 Hz | refused by the driver ("not supported on this connection") | — | — |
+| Auto sleep | 60 s, 900 s, 300 s | each value | 60 s held |
+| Low power | 5 %, 50 %, 30 % | each value | 5 % held |
+
+**Polling is measured, not just read back.** A `pointerrawupdate` counter
+(1 s sliding window, peak) read 842 Hz with the mouse at 1000 Hz and 124 Hz
+after the driver wrote 125 Hz. The legacy command with its divisor of 1000
+changes the link rate on this receiver; `highRatePolling: false` is right.
+
+**Sleep and low power persist.** Both were written, the mouse was switched off
+at its power switch for a few seconds and back on, and both re-read as written
+(60 s and 5 %). Of the two mechanisms below, that rules out 1 (no commit step,
+volatile state): the values live in the mouse. The original report was made
+with the vendor software present, which leaves 2 (contention) as the
+explanation; with it fully quit nothing here needed a commit step.
+
+Not covered by that session, so still open for this model:
+
+- The wired transport `1532:00b6` was never connected.
+- Step 8 (an off-list timeout set in Synapse appearing in the dropdown) needs
+  Synapse, which cannot run alongside the test.
+- Lift-off: the row keeps `liftOff: false`, so class `0x0b` was not sent.
+
+### Earlier capture (`1532:00b6`) — a write that confirms but may not apply
 
 Reported: polling rate, low power mode and auto sleep "don't flash into the
 mouse", yet changing them in Razer's own software does show up here.

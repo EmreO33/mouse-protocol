@@ -617,7 +617,12 @@ const PRODUCT_DEFINITIONS: ReadonlyArray<[number, Omit<RazerProduct, "transactio
   // encoding was addressing a ceiling the hardware does not have. `0x00c3` is
   // the same model on a second product id and is likely the same, but nobody
   // has measured it — see TESTING.md.
-  [0x00b7, { model: "DeathAdder V3 Pro", ...MODERN_RECEIVER, highRatePolling: false, maxDpi: DPI_FOCUS_PRO }],
+  //
+  // Verified on firmware 2.1 with the legacy command: 125/500/1000 Hz each
+  // round-tripped AND measured (124 Hz and 842 Hz peak `pointerrawupdate` at
+  // 125 and 1000), DPI, auto sleep and low power persisted across a reconnect
+  // and a power cycle. The wired `0x00b6` has not been connected.
+  [0x00b7, { model: "DeathAdder V3 Pro", ...MODERN_RECEIVER, highRatePolling: false, maxDpi: DPI_FOCUS_PRO, verified: true }],
   [0x00b9, { model: "Basilisk V3 X HyperSpeed", ...LEGACY_RECEIVER, maxDpi: 18_000 }],
   // Was nativeOnly: the control channel used to sit on a Chrome-protected
   // collection (with Synapse fully stopped the diagnostics harness got "no
