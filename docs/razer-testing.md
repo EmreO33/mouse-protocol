@@ -23,6 +23,7 @@ Identifiers verified on hardware:
 - `1532:008a` — Viper Mini, wired (separate driver)
 - `1532:00b8` — Viper V3 HyperSpeed, stock HyperSpeed receiver
 - `1532:00a3` — Cobra, wired (separate driver)
+- `1532:00b6` — DeathAdder V3 Pro, wired (firmware 2.1)
 - `1532:00b7` — DeathAdder V3 Pro, stock HyperSpeed receiver (firmware 2.1)
 
 Mouse Dock Pro uses the same 90-byte protocol as the paired mouse. It has no
@@ -157,7 +158,7 @@ this model and took the whole read down with it. The two are now read
 independently; an unreadable charging state reports `Unknown` rather than
 costing the level.
 
-## DeathAdder V3 Pro (`1532:00b7`) — verified on the stock receiver (firmware 2.1)
+## DeathAdder V3 Pro (`1532:00b6` wired, `1532:00b7` receiver) — verified (firmware 2.1)
 
 A third session, run from Node over hidapi against the same driver class
 (`RazerHidClient`, unmodified) with Synapse and every Razer service quit,
@@ -189,9 +190,18 @@ volatile state): the values live in the mouse. The original report was made
 with the vendor software present, which leaves 2 (contention) as the
 explanation; with it fully quit nothing here needed a commit step.
 
-Not covered by that session, so still open for this model:
+**Wired (`1532:00b6`), same session, cable plugged into the same mouse.**
+`MI_00` answered first try as "DeathAdder V3 Pro (Wired)", connection "Wired",
+battery "Charging". The identical 13-step write/read-back run passed 13/13
+(DPI 800/3200, polling 125/500/1000 on the legacy command, 2000 Hz refused,
+sleep 60/900 s, low power 5/50 %), all restored afterwards. Polling measured
+126 Hz peak at 125 and well above 500 at 1000. A second 3-minute soak read
+31/31 at 824 to 887 ms, and the battery climbed from 25 % to 32 % over the
+two wired runs, so the charge read is live, not cached. Settings written on
+one transport read back identically on the other; they live in the mouse.
 
-- The wired transport `1532:00b6` was never connected.
+Still open for this model:
+
 - Step 8 (an off-list timeout set in Synapse appearing in the dropdown) needs
   Synapse, which cannot run alongside the test.
 - Lift-off: the row keeps `liftOff: false`, so class `0x0b` was not sent.

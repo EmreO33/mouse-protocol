@@ -609,7 +609,10 @@ const PRODUCT_DEFINITIONS: ReadonlyArray<[number, Omit<RazerProduct, "transactio
   [0x00af, { model: "Cobra Pro (Wired)", ...MODERN_WIRED, maxDpi: DPI_FOCUS_PRO }],
   [0x00b0, { model: "Cobra Pro", ...MODERN_RECEIVER, maxDpi: DPI_FOCUS_PRO }],
   [0x00b4, { model: "Naga V2 HyperSpeed", ...LEGACY_RECEIVER, maxDpi: DPI_FOCUS_PRO }],
-  [0x00b6, { model: "DeathAdder V3 Pro (Wired)", ...MODERN_WIRED, maxDpi: DPI_FOCUS_PRO }],
+  // Verified on firmware 2.1 over the cable: same 13 write/read-back steps as
+  // the receiver below, polling measured (126 Hz peak at 125), battery reads
+  // "Charging" and climbs while plugged in.
+  [0x00b6, { model: "DeathAdder V3 Pro (Wired)", ...MODERN_WIRED, maxDpi: DPI_FOCUS_PRO, verified: true }],
   // Hardware report: the extended command is accepted and reads back, but the
   // measured report rate stays at 1000 Hz whatever is written. This model ships
   // with the stock 1000 Hz HyperSpeed receiver, not the 8000 Hz HyperPolling
@@ -621,7 +624,7 @@ const PRODUCT_DEFINITIONS: ReadonlyArray<[number, Omit<RazerProduct, "transactio
   // Verified on firmware 2.1 with the legacy command: 125/500/1000 Hz each
   // round-tripped AND measured (124 Hz and 842 Hz peak `pointerrawupdate` at
   // 125 and 1000), DPI, auto sleep and low power persisted across a reconnect
-  // and a power cycle. The wired `0x00b6` has not been connected.
+  // and a power cycle. The wired `0x00b6` above was verified the same way.
   [0x00b7, { model: "DeathAdder V3 Pro", ...MODERN_RECEIVER, highRatePolling: false, maxDpi: DPI_FOCUS_PRO, verified: true }],
   [0x00b9, { model: "Basilisk V3 X HyperSpeed", ...LEGACY_RECEIVER, maxDpi: 18_000 }],
   // Was nativeOnly: the control channel used to sit on a Chrome-protected
